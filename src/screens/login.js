@@ -18,7 +18,7 @@ export default function LoginScreen({ navigation }) {
           <View style={styles.inputView}>
             <TextInput style={styles.inputText} secureTextEntry placeholder="Password" />
           </View>
-          <Button title="Login" onPress={() => navigation.navigate('Home')} />
+          <Button title="Login" onPress={() => navigation.replace('Home')} />
           <Button title="Sign Up" onPress={() => console.log("Register Pressed")}/>
         </View>
       </View>
