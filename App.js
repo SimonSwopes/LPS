@@ -10,6 +10,11 @@ import {styles} from './src/utils/styleSheet.js';
 // Screen Imports
 import HomeScreen from './src/screens/home.js';
 import LoginScreen from './src/screens/login.js';
+import BrowseScreen from './src/screens/browse.js';
+import HistoryScreen from './src/screens/history.js';
+import PreviousWinsScreen from './src/screens/prevWins.js';
+import ProfileScreen from './src/screens/profile.js';
+import SearchScreen from './src/screens/search.js';
 
 // Global Navigation Stack
 const Stack = createStackNavigator();
@@ -32,6 +37,11 @@ export default function App() {
       >
       <Stack.Screen name="Login" component={LoginScreen} options={{title:'Login'}}/>
       <Stack.Screen name="Home" component={HomeScreen} options={{title: 'Home'}}/>
+      <Stack.Screen name="Browse" component={BrowseScreen} options={{title: 'Browse Tickets'}}/>
+      <Stack.Screen name="History" component={HistoryScreen} options={{title: 'Order History'}}/>
+      <Stack.Screen name="Previous Wins" component={PreviousWinsScreen} options={{title: 'Previoius Wins'}}/>
+      <Stack.Screen name="Profile" component={ProfileScreen} options={{title: 'Profile'}}/>
+      <Stack.Screen name="Search" component={SearchScreen} options={{title: 'Search Tickets'}}/>
       </Stack.Navigator>
     </NavigationContainer>
   );
