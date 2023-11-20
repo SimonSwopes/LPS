@@ -17,6 +17,10 @@ export const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
 
+  rowContainer: {
+    flexDirection: 'row',
+  },
+
   title: {
     color: '#000',
     fontFamily: 'Times New Roman',
@@ -45,5 +49,24 @@ export const styles = StyleSheet.create({
   inputText:{
     height:50,
     color:'#000',
+  },
+
+  button:{
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 25,
+    backgroundColor: '#0096FF',
+    width: 175,
+  },
+
+  buttonText: {
+    color: '#fff',
+    fontFamily: 'Times New Roman',
+    fontSize: 24,
+  },
+
+  spacer: {
+    width: 20,
+    height: 20,
   },
 });
