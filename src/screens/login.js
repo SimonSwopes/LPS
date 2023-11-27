@@ -19,7 +19,7 @@ export default function LoginScreen({ navigation }) {
             <TextInput style={styles.inputText} secureTextEntry placeholder="Password" />
           </View>
           <Button title="Login" onPress={() => navigation.replace('Home')} />
-          <Button title="Sign Up" onPress={() => console.log("Register Pressed")}/>
+          <Button title="Sign Up" onPress={() => navigation.navigate('SignUp')}/>
         </View>
       </View>
     </ScrollView>
