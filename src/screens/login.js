@@ -48,7 +48,7 @@ export default function LoginScreen({ navigation }) {
           {/* Sign Up button */}
           <Button
             title="sign up"
-            onPress={() => console.log("Sign Up Pressed")}
+            onPress={() => navigation.navigate('SignUp')}
           >
             <Text style={styles.buttonText}>Sign Up</Text>
           </Button>
