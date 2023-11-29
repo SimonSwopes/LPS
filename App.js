@@ -55,7 +55,7 @@ export default function App() {
           headerTitleStyle: {
             fontWeight: 'bold',
             color: '#fff',
-            fontFamily: 'Times New Roman',
+            fontFamily: 'Helvetica',
           },
         }}
       >
