@@ -36,7 +36,8 @@ const LoginScreen = ({ navigation }) => {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.subContainer}>
-        <Text style={styles.title}>Login</Text>
+        <Text style={styles.title}>LPS</Text>
+        <Text style={styles.subTitle}>Lottery Purchase System</Text>
         <View style={styles.inputView}>
           <TextInput
             placeholder="Email"
