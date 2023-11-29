@@ -16,7 +16,11 @@ const LoginScreen = ({ navigation }) => {
         [email, password],
         (_, result) => {
           if (result.rows.length > 0) {
-            navigation.navigate('Home');
+            if (email === "admin") {
+              navigation.replace('AdminHome');
+            } else {
+              navigation.replace('Home');
+            }
           } else {
             Alert.alert('Error', 'Invalid email or password. Please try again.');
           }
@@ -32,7 +36,8 @@ const LoginScreen = ({ navigation }) => {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.subContainer}>
-        <Text style={styles.title}>Login</Text>
+        <Text style={styles.title}>LPS</Text>
+        <Text style={styles.subTitle}>Lottery Purchase System</Text>
         <View style={styles.inputView}>
           <TextInput
             placeholder="Email"

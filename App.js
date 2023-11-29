@@ -18,6 +18,9 @@ import PreviousWinsScreen from './src/screens/prevWins.js';
 import ProfileScreen from './src/screens/profile.js';
 import SearchScreen from './src/screens/search.js';
 import SignUpScreen from './src/screens/signup.js';
+import AdminHomeScreen from './src/screens/adminHome.js';
+import StatusScreen from './src/screens/status.js';
+import ManageScreen from './src/screens/manage.js';
 
 // Global Navigation Stack
 const Stack = createStackNavigator();
@@ -64,6 +67,9 @@ export default function App() {
       <Stack.Screen name="Profile" component={ProfileScreen} options={{title: 'Profile'}}/>
       <Stack.Screen name="Search" component={SearchScreen} options={{title: 'Search Tickets'}}/>
       <Stack.Screen name="SignUp" component={SignUpScreen} options={{title: 'Register'}}/>
+      <Stack.Screen name="AdminHome" component={AdminHomeScreen} options={{title: 'Admin Home'}}/>
+      <Stack.Screen name="Status" component={StatusScreen} options={{title: 'System Status'}}/>
+      <Stack.Screen name="Manage" component={ManageScreen} options={{title: 'Manage Tickets'}}/>
       </Stack.Navigator>
     </NavigationContainer>
   );
