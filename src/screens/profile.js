@@ -31,6 +31,7 @@ const ProfileScreen = ({ navigation }) => {
     // Implement sign-out logic if needed
     // For simplicity, let's just navigate back to the login page
     navigation.popToTop(); // This will navigate to the first screen in the stack (login page)
+    navigation.replace('Login');
   };
 
   return (
