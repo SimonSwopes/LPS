@@ -3,6 +3,8 @@ import { StyleSheet, Text, View, TextInput, ScrollView, Button } from 'react-nat
 import 'react-native-gesture-handler';
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
+import * as SQLite from 'expo-sqlite';
+import { useState, useEffect } from 'react';
 
 // Local Imports
 import {styles} from './src/utils/styleSheet.js';
@@ -21,6 +23,24 @@ import SignUpScreen from './src/screens/signup.js';
 const Stack = createStackNavigator();
 
 export default function App() {
+    const db = SQLite.openDatabase('userData.db');
+    useEffect(() => {
+      // Create the 'users' table if it doesn't exist
+      db.transaction(tx => {
+        tx.executeSql(
+          'CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, email TEXT, password TEXT, address TEXT, phone TEXT);',
+          [],
+          (_, result) => {
+            console.log('Table created successfully');
+          },
+          (_, error) => {
+            console.log('Error creating table: ', error);
+          }
+        );
+      });
+    }, []);
+
+  
   return (
     <NavigationContainer>
       <Stack.Navigator //header formating

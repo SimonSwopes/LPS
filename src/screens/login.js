@@ -1,60 +1,66 @@
 import React, { useState } from 'react';
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, TextInput, ScrollView, Button } from 'react-native';
+import { View, Text, TextInput, Button, Alert, ScrollView } from 'react-native';
+import * as SQLite from 'expo-sqlite';
 import { styles } from '../utils/styleSheet';
-import usersData from '../utils/users.json'; // Update the path accordingly
 
-export default function LoginScreen({ navigation }) {
+const db = SQLite.openDatabase('userData.db');
+
+const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const handleLogin = () => {
-    // Check if the entered email and password match any user in the JSON data
-    const user = usersData.users.find(user => user.email === email && user.password === password);
-
-    if (user) {
-      // Successful login, navigate to the Home screen
-      navigation.replace('Home');
-    } else {
-      // Invalid credentials, you might want to show an error message
-      console.log('Invalid email or password');
-    }
+    db.transaction(tx => {
+      tx.executeSql(
+        'SELECT * FROM users WHERE email = ? AND password = ?',
+        [email, password],
+        (_, result) => {
+          if (result.rows.length > 0) {
+            navigation.navigate('Home');
+          } else {
+            Alert.alert('Error', 'Invalid email or password. Please try again.');
+          }
+        },
+        (_, error) => {
+          console.log('Error checking login credentials: ', error);
+          Alert.alert('Error', 'Login failed. Please try again.');
+        }
+      );
+    });
   };
 
   return (
-    <ScrollView>
-      <View style={styles.container}>
-        <Text style={styles.title}>LPS</Text>
-        <Text style={styles.subTitle}>Lottery Purchase System</Text>
-        <StatusBar style="auto" />
-        <View style={styles.subContainer}>
-          <View style={styles.inputView}>
-            <TextInput
-              style={styles.inputText}
-              placeholder="Email"
-              onChangeText={text => setEmail(text)}
-            />
-          </View>
-          <View style={styles.inputView}>
-            <TextInput
-              style={styles.inputText}
-              secureTextEntry
-              placeholder="Password"
-              onChangeText={text => setPassword(text)}
-            />
-          </View>
-          {/* Login button */}
-          <Button title="login" onPress={handleLogin}/>
-          {/* Sign Up button */}
-          <Button
-            title="sign up"
-            onPress={() => navigation.navigate('SignUp')}
-          >
-            <Text style={styles.buttonText}>Sign Up</Text>
-          </Button>
+    <ScrollView contentContainerStyle={styles.container}>
+      <View style={styles.subContainer}>
+        <Text style={styles.title}>Login</Text>
+        <View style={styles.inputView}>
+          <TextInput
+            placeholder="Email"
+            value={email}
+            onChangeText={text => setEmail(text)}
+            style={styles.inputText}
+          />
         </View>
+        <View style={styles.inputView}>
+          <TextInput
+            placeholder="Password"
+            secureTextEntry
+            value={password}
+            onChangeText={text => setPassword(text)}
+            style={styles.inputText}
+          />
+        </View>
+        <Button title="Login" onPress={handleLogin} style={styles.button} />
+        <Button
+          title="Sign Up"
+          onPress={() => navigation.navigate('SignUp')}
+          style={styles.button}
+        >
+          <Text style={styles.buttonText}>Sign Up</Text>
+        </Button>
       </View>
     </ScrollView>
   );
-}
+};
 
+export default LoginScreen;
