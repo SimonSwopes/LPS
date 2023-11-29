@@ -17,21 +17,37 @@ export const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
 
+  leftAlignContainer: {
+    flex: 2,
+    justifyContent: 'center',
+    width: "100%",
+    alignItems: 'left',
+    backgroundColor: '#fff',
+  },
+
   rowContainer: {
     flexDirection: 'row',
   },
 
   title: {
     color: '#000',
-    fontFamily: 'Times New Roman',
+    fontFamily: 'Helvetica',
     fontSize: 48,
     fontWeight: 'bold',
   },
 
   subTitle: {
     color: '#000',
-    fontFamily: 'Times New Roman',
+    fontWeight: 'bold',
+    fontFamily: 'Helvetica',
     fontSize: 24,
+  },
+
+  profileText: {
+    color: '#000',
+    fontWeight: 'bold',
+    fontFamily: 'Helvetica',
+    fontSize: 30,
   },
   
   inputView: {
@@ -59,10 +75,20 @@ export const styles = StyleSheet.create({
     width: 175,
   },
 
+  signOutButton:{
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 25,
+    backgroundColor: '#0096FF',
+    width: 500,
+    marginBottom: 150
+  },
+
   buttonText: {
     color: '#fff',
-    fontFamily: 'Times New Roman',
-    fontSize: 24,
+    fontWeight: 'bold',
+    fontFamily: 'Helvetica',
+    fontSize: 40,
   },
 
   spacer: {
