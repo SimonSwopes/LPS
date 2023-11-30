@@ -21,28 +21,46 @@ import SignUpScreen from './src/screens/signup.js';
 import AdminHomeScreen from './src/screens/adminHome.js';
 import StatusScreen from './src/screens/status.js';
 import ManageScreen from './src/screens/manage.js';
+import AddTicketScreen from './src/screens/addTicket.js';
+import RemoveTicket from './src/screens/removeTicket.js';
 
 // Global Navigation Stack
 const Stack = createStackNavigator();
 
 export default function App() {
-    const db = SQLite.openDatabase('userData.db');
+  const db = SQLite.openDatabase('userData.db');
+  useEffect(() => {
+    // Create the 'users' table if it doesn't exist
+    db.transaction(tx => {
+      tx.executeSql(
+        'CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, email TEXT, password TEXT, address TEXT, phone TEXT);',
+        [],
+        (_, result) => {
+          console.log('User table created successfully');
+        },
+        (_, error) => {
+          console.log('Error user creating table: ', error);
+        }
+      );
+    });
+  }, []);
+
+  // type is name price is dollar int and draw Date is day of week 1-7 for Mon-Sun
+  const ticketDb = SQLite.openDatabase('ticketData.db');
     useEffect(() => {
-      // Create the 'users' table if it doesn't exist
-      db.transaction(tx => {
+      ticketDb.transaction(tx => {
         tx.executeSql(
-          'CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, email TEXT, password TEXT, address TEXT, phone TEXT);',
+          'CREATE TABLE IF NOT EXISTS tickets (id INTEGER PRIMARY KEY AUTOINCREMENT, type TEXT, price INTEGER, drawDate INTEGER, numsold INTEGER, jackpot REAL);', 
           [],
           (_, result) => {
-            console.log('Table created successfully');
+            console.log('Ticket table created succesfully');
           },
           (_, error) => {
-            console.log('Error creating table: ', error);
+            console.log('Error creating ticket table: ', error);
           }
         );
       });
     }, []);
-
   
   return (
     <NavigationContainer>
@@ -69,7 +87,9 @@ export default function App() {
       <Stack.Screen name="SignUp" component={SignUpScreen} options={{title: 'Register'}}/>
       <Stack.Screen name="AdminHome" component={AdminHomeScreen} options={{title: 'Admin Home'}}/>
       <Stack.Screen name="Status" component={StatusScreen} options={{title: 'System Status'}}/>
-      <Stack.Screen name="Manage" component={ManageScreen} options={{title: 'Manage Tickets'}}/>
+      <Stack.Screen name="Manage" component={ManageScreen} options={{title: 'Manage'}}/>
+      <Stack.Screen name="AddTicket" component={AddTicketScreen} options={{title: 'New'}}/>
+      <Stack.Screen name="Remove" component={RemoveTicket} options={{title: 'Remove'}}/>
       </Stack.Navigator>
     </NavigationContainer>
   );

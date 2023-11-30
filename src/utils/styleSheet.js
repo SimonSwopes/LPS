@@ -17,6 +17,13 @@ export const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
 
+  subFlex: {
+    flex: 2,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
   leftAlignContainer: {
     flex: 2,
     justifyContent: 'center',
