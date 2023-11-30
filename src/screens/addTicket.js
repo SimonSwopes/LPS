@@ -26,6 +26,7 @@ const AddTicketScreen = ({ navigation }) => {
         }
       );
     });
+    navigation.pop();
   };
 
   return (

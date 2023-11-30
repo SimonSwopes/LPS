@@ -65,6 +65,9 @@ const RemoveTicket = ({ navigation }) => {
           console.log('Transaction error:', error);
         }
       );
+      navigation.pop();
+      navigation.replace('Manage');
+      navigation.navigate('Remove');
     },
       },
     ])
