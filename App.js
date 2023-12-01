@@ -23,6 +23,7 @@ import StatusScreen from './src/screens/status.js';
 import ManageScreen from './src/screens/manage.js';
 import AddTicketScreen from './src/screens/addTicket.js';
 import RemoveTicket from './src/screens/removeTicket.js';
+import OrderScreen from './src/screens/order.js';
 
 // Global Navigation Stack
 const Stack = createStackNavigator();
@@ -90,6 +91,7 @@ export default function App() {
       <Stack.Screen name="Manage" component={ManageScreen} options={{title: 'Manage'}}/>
       <Stack.Screen name="AddTicket" component={AddTicketScreen} options={{title: 'New'}}/>
       <Stack.Screen name="Remove" component={RemoveTicket} options={{title: 'Remove'}}/>
+      <Stack.Screen name="Order" component={OrderScreen} options={{title: 'Order'}}/>
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -43,7 +43,7 @@ const SearchScreen= ({ navigation}) => {
             <Button
               key={item.id}
               title={item.type}
-              onPress={() => console.log('Proceed to checkout')}
+              onPress={() => navigation.navigate('Order')}
             />
           ))}
         </View>
