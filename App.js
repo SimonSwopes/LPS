@@ -50,7 +50,7 @@ export default function App() {
     useEffect(() => {
       ticketDb.transaction(tx => {
         tx.executeSql(
-          'CREATE TABLE IF NOT EXISTS tickets (id INTEGER PRIMARY KEY AUTOINCREMENT, type TEXT, price INTEGER, drawDate INTEGER, numsold INTEGER, jackpot REAL);', 
+          'CREATE TABLE IF NOT EXISTS tickets (id INTEGER PRIMARY KEY AUTOINCREMENT, type TEXT, price REAL, drawDate INTEGER, numsold INTEGER, jackpot REAL);', 
           [],
           (_, result) => {
             console.log('Ticket table created succesfully');
