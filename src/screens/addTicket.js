@@ -36,18 +36,19 @@ const AddTicketScreen = ({ navigation }) => {
           style={styles.inputText}
           value={name}
           onChangeText={text => setName(text)} 
+          inputMode='text'
         />
         <TextInput
           placeholder="Jackpot millions"
           style={styles.inputText}
-          inputMode='numeric'
+          inputMode='decimal'
           value={jackpot}
           onChangeText={text => setJackpot(text)}
         />
         <TextInput
           placeholder="Price"
           style={styles.inputText}
-          inputMode='numeric'
+          inputMode='decimal'
           value={price}
           onChangeText={text => setPrice(text)}
         />
