@@ -1,4 +1,3 @@
-// TODO: fix so that list rerenders on go back
 import React, {useState, useEffect} from 'react';
 import {Text, View, Pressable, FlatList, SafeAreaView, Button} from 'react-native';
 import * as SQLite from 'expo-sqlite';
@@ -31,8 +30,7 @@ const ManageScreen = ({ navigation }) => {
   const renderTickets = ({ item }) => {
     return (
       <View style={styles.rowContainer}>
-        <Button title={item.type} onPress={() => console.log('TODO: proceed to purchase screen')}/>
-        <Text style={styles.subTitle}>: ${item.price}, {item.jackpot} million</Text> 
+        <Text style={styles.subTitle}>{item.type}: ${item.price}, {item.jackpot} million</Text> 
       </View>
     )
   };
