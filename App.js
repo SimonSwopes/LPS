@@ -25,10 +25,17 @@ import AddTicketScreen from './src/screens/addTicket.js';
 import RemoveTicket from './src/screens/removeTicket.js';
 import OrderScreen from './src/screens/order.js';
 
+// Contexts Imports
+import UserContext from './src/constants/UserContext.js';
+
 // Global Navigation Stack
 const Stack = createStackNavigator();
 
 export default function App() {
+
+  // will store user ID
+  const [User, setUser] = useState(0);
+
   const db = SQLite.openDatabase('userData.db');
   useEffect(() => {
     // Create the 'users' table if it doesn't exist
@@ -62,8 +69,25 @@ export default function App() {
         );
       });
     }, []);
+
+  const transactionsDb = SQLite.openDatabase('transactionData.db');
+    useEffect(() => {
+      transactionsDb.transaction(tx => {
+        tx.executeSql(
+          'CREATE TABLE IF NOT EXISTS transactions (id INTEGER PRIMARY KEY AUTOINCREMENT, userId INTEGER, ticketId INTEGER, confirmation TEXT, numbers TEXT, winner BOOL, cashed BOOL);',
+          [],
+          (_, result) => {
+            console.log('Transactions table created Succesfully');
+          },
+          (_, error) => {
+            console.log('Error creating transactions table:', error);
+          }
+        );
+      });
+    }, []);
   
   return (
+    <UserContext.Provider value={{User, setUser}}>
     <NavigationContainer>
       <Stack.Navigator //header formating
         screenOptions={{
@@ -94,5 +118,6 @@ export default function App() {
       <Stack.Screen name="Order" component={OrderScreen} options={{title: 'Order'}}/>
       </Stack.Navigator>
     </NavigationContainer>
+    </UserContext.Provider>
   );
 }

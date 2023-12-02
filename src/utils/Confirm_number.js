@@ -1,4 +1,4 @@
-function Generate_Con_number(length) {
+export function Generate_Con_number(length) {
 	const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
 	const charactersLength = characters.length;
 	let confirmationNumber = '';
@@ -10,6 +10,3 @@ function Generate_Con_number(length) {
 
 	return confirmationNumber;
 }
-
-const confirmationNumber = Generate_Con_number(7);
-console.log('Confirmation Number:', confirmationNumber);

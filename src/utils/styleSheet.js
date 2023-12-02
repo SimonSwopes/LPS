@@ -24,6 +24,13 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 
+  bottomFlex: {
+    flex: 3,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
   leftAlignContainer: {
     flex: 2,
     justifyContent: 'center',
