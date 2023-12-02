@@ -1,13 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { View, Text, TextInput, Button, Alert, ScrollView } from 'react-native';
 import * as SQLite from 'expo-sqlite';
 import { styles } from '../utils/styleSheet';
+
+import UserContext from '../constants/UserContext.js';
 
 const db = SQLite.openDatabase('userData.db');
 
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
+  const { User, setUser} = useContext(UserContext);
 
   const handleLogin = () => {
     db.transaction(tx => {
@@ -16,6 +20,7 @@ const LoginScreen = ({ navigation }) => {
         [email, password],
         (_, result) => {
           if (result.rows.length > 0) {
+            setUser(result.rows.item(0).id)
             if (email === "admin") {
               navigation.replace('AdminHome');
             } else {

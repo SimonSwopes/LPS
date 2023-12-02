@@ -1,19 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { View, Text, StyleSheet, ScrollView, Button, Pressable } from 'react-native';
 import * as SQLite from 'expo-sqlite';
 import { styles } from '../utils/styleSheet'; // Make sure to adjust the path based on your project structure
+
+import UserContext from '../constants/UserContext.js';
 
 const db = SQLite.openDatabase('userData.db');
 
 const ProfileScreen = ({ navigation }) => {
   const [userData, setUserData] = useState(null);
+  const {User, setUser} = useContext(UserContext);
 
   useEffect(() => {
     // Fetch user data from the 'users' table
     db.transaction(tx => {
       tx.executeSql(
         'SELECT * FROM users WHERE id = ?', // Assuming you have a user ID once they are logged in
-        [1], // Replace with the actual user ID
+        [User], // Replace with the actual user ID
         (_, result) => {
           if (result.rows.length > 0) {
             const user = result.rows.item(0);
@@ -25,7 +28,7 @@ const ProfileScreen = ({ navigation }) => {
         }
       );
     });
-  }, []);
+  }, [User]);
 
   const handleSignOut = () => {
     // Implement sign-out logic if needed

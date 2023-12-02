@@ -29,7 +29,7 @@ const BrowseScreen= ({ navigation}) => {
   const renderTickets = ({ item }) => {
     return (
       <View style={styles.rowContainer}>
-        <Button title={item.type} onPress={() => navigation.navigate('Order')}/>
+        <Button title={item.type} onPress={() => navigation.navigate('Order', {ticketType: item.type})}/>
         <Text style={styles.subTitle}>: ${item.price}, {item.jackpot} million</Text>
       </View>
     )
