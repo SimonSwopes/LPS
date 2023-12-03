@@ -70,13 +70,26 @@ const OrderScreen = ({ route, navigation }) => {
     const numSoldUpdate = ticketData.numsold + 1;
     const numbers = ticketNums.join(',');
     const confirmation = Generate_Con_number(10); // change for different length con num
-    const cashed = false;
+    const cashed = 0;
+    let matched = true
+    for (let i = 0; i < numbers.length; i++) {
+      if (numbers[i] === ',') {
+        if (matched) {
+          cashed += 1;
+        }
+        matched = true;
+        continue;
+      }
+      if (numbers[i] != ticketData.winningNumbers[i]) {
+        matched = false;
+      }
+    }
     const winner = false;
     
     transactionDB.transaction(tx => {
       tx.executeSql(
-        'INSERT INTO transactions (userId, ticketId, ticketName, confirmation, numbers, winner, cashed) VALUES (?, ?, ?, ?, ?, ?, ?)',
-        [User, ticketData.id, ticketData.type, confirmation, numbers, winner, cashed],
+        'INSERT INTO transactions (userId, ticketId, ticketName, confirmation, numbers, winner, cashed) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+        [User, ticketData.id, ticketData.type, confirmation, numbers, winner, cashed, ticketData.jackpot],
         (_, result) => {
           console.log('Transaction successful');
           navigation.popToTop();

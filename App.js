@@ -109,7 +109,7 @@ useEffect(() => {
   transactionsDb.transaction(tx => {
     // Initialize the transactions table with all columns
     tx.executeSql(
-      'CREATE TABLE IF NOT EXISTS transactions (id INTEGER PRIMARY KEY AUTOINCREMENT, userId INTEGER, ticketId INTEGER, confirmation TEXT, numbers TEXT, winner INTEGER, cashed BOOL, ticketName TEXT);',
+      'CREATE TABLE IF NOT EXISTS transactions (id INTEGER PRIMARY KEY AUTOINCREMENT, userId INTEGER, ticketId INTEGER, confirmation TEXT, numbers TEXT, winner INTEGER, cashed BOOL, ticketName TEXT, jackpot REAL);',
       [],
       (_, result) => {
         console.log('Transactions table created successfully');
