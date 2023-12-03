@@ -35,7 +35,7 @@ const HistoryScreen= ({ navigation}) => {
   const renderTransactions = ({ item }) => {
     return (
       <View>
-        <Text style={styles.subTitle}>{item.confirmation}, {item.numbers}</Text>
+        <Text style={styles.subTitle}>{item.ticketName}, {item.numbers}</Text>
       </View>
     );
   };
