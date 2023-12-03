@@ -72,12 +72,13 @@ const OrderScreen = ({ route, navigation }) => {
     const confirmation = Generate_Con_number(10); // change for different length con num
     const cashed = false;
     const winner = false;
+    
     transactionDB.transaction(tx => {
       tx.executeSql(
-        'INSERT INTO transactions (userId, ticketId, confirmation, numbers, winner, cashed) VALUES (?, ?, ?, ?, ?, ?)',
-        [User, ticketData.id, confirmation, numbers, winner, cashed],
+        'INSERT INTO transactions (userId, ticketId, ticketName, confirmation, numbers, winner, cashed) VALUES (?, ?, ?, ?, ?, ?, ?)',
+        [User, ticketData.id, ticketData.type, confirmation, numbers, winner, cashed],
         (_, result) => {
-          console.log('Trasnaction successful');
+          console.log('Transaction successful');
           navigation.popToTop();
         },
         (_, error) => {
@@ -87,6 +88,7 @@ const OrderScreen = ({ route, navigation }) => {
       );
     });
   };
+  
 
   refs.current = refs;
   return (

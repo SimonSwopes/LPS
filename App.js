@@ -53,38 +53,103 @@ export default function App() {
     });
   }, []);
 
-  // type is name price is dollar int and draw Date is day of week 1-7 for Mon-Sun
   const ticketDb = SQLite.openDatabase('ticketData.db');
-    useEffect(() => {
-      ticketDb.transaction(tx => {
+useEffect(() => {
+  ticketDb.transaction(tx => {
+    tx.executeSql(
+      'CREATE TABLE IF NOT EXISTS tickets (' +
+      'id INTEGER PRIMARY KEY AUTOINCREMENT, ' +
+      'type TEXT, ' +
+      'price REAL, ' +
+      'drawDate INTEGER, ' +
+      'numsold INTEGER, ' +
+      'jackpot REAL);', // Without winningNumbers initially
+      [],
+      (_, result) => {
+        console.log('Ticket table created successfully');
+        
+        // Check if the winningNumbers column exists before attempting to add it
         tx.executeSql(
-          'CREATE TABLE IF NOT EXISTS tickets (id INTEGER PRIMARY KEY AUTOINCREMENT, type TEXT, price REAL, drawDate INTEGER, numsold INTEGER, jackpot REAL);', 
+          'PRAGMA table_info(tickets);',
           [],
-          (_, result) => {
-            console.log('Ticket table created succesfully');
+          (_, resultInfo) => {
+            const existingColumns = Array.from({ length: resultInfo.rows.length }, (_, i) => resultInfo.rows.item(i).name);
+            
+            if (!existingColumns.includes('winningNumbers')) {
+              // The winningNumbers column doesn't exist, so we can add it
+              tx.executeSql(
+                'ALTER TABLE tickets ADD COLUMN winningNumbers TEXT;',
+                [],
+                (_, resultAlter) => {
+                  console.log('Altered table successfully to add winningNumbers column');
+                },
+                (_, errorAlter) => {
+                  console.log('Error altering table:', errorAlter);
+                }
+              );
+            } else {
+              console.log('winningNumbers column already exists');
+            }
           },
-          (_, error) => {
-            console.log('Error creating ticket table: ', error);
+          (_, errorInfo) => {
+            console.log('Error checking table info:', errorInfo);
           }
         );
-      });
-    }, []);
+      },
+      (_, error) => {
+        console.log('Error creating ticket table: ', error);
+      }
+    );
+  });
+}, []);
 
-  const transactionsDb = SQLite.openDatabase('transactionData.db');
-    useEffect(() => {
-      transactionsDb.transaction(tx => {
-        tx.executeSql(
-          'CREATE TABLE IF NOT EXISTS transactions (id INTEGER PRIMARY KEY AUTOINCREMENT, userId INTEGER, ticketId INTEGER, confirmation TEXT, numbers TEXT, winner BOOL, cashed BOOL);',
-          [],
-          (_, result) => {
-            console.log('Transactions table created Succesfully');
-          },
-          (_, error) => {
-            console.log('Error creating transactions table:', error);
-          }
-        );
-      });
-    }, []);
+
+const transactionsDb = SQLite.openDatabase('transactionData.db');
+useEffect(() => {
+  transactionsDb.transaction(tx => {
+    // Initialize the transactions table with all columns
+    tx.executeSql(
+      'CREATE TABLE IF NOT EXISTS transactions (id INTEGER PRIMARY KEY AUTOINCREMENT, userId INTEGER, ticketId INTEGER, confirmation TEXT, numbers TEXT, winner INTEGER, cashed BOOL, ticketName TEXT);',
+      [],
+      (_, result) => {
+        console.log('Transactions table created successfully');
+      },
+      (_, error) => {
+        console.log('Error creating transactions table:', error);
+      }
+    );
+
+    // Check if the ticketName column exists before attempting to add it
+    tx.executeSql(
+      'PRAGMA table_info(transactions);',
+      [],
+      (_, resultInfo) => {
+        const existingColumns = Array.from({ length: resultInfo.rows.length }, (_, i) => resultInfo.rows.item(i).name);
+
+        if (!existingColumns.includes('ticketName')) {
+          // The ticketName column doesn't exist, so we can add it
+          tx.executeSql(
+            'ALTER TABLE transactions ADD COLUMN ticketName TEXT;',
+            [],
+            (_, resultAlter) => {
+              console.log('Altered transactions table successfully to add ticketName column');
+            },
+            (_, errorAlter) => {
+              console.log('Error altering transactions table:', errorAlter);
+            }
+          );
+        } else {
+          console.log('ticketName column already exists');
+        }
+      },
+      (_, errorInfo) => {
+        console.log('Error checking transactions table info:', errorInfo);
+      }
+    );
+  });
+}, []);
+
+
   
   return (
     <UserContext.Provider value={{User, setUser}}>
