@@ -68,28 +68,32 @@ const OrderScreen = ({ route, navigation }) => {
 
   const handleConfirm = () => {
     const numSoldUpdate = ticketData.numsold + 1;
-    const numbers = ticketNums.join(',');
     const confirmation = Generate_Con_number(10); // change for different length con num
     const cashed = 0;
-    let matched = true
-    for (let i = 0; i < numbers.length; i++) {
-      if (numbers[i] === ',') {
-        if (matched) {
-          cashed += 1;
-        }
-        matched = true;
-        continue;
-      }
-      if (numbers[i] != ticketData.winningNumbers[i]) {
-        matched = false;
+  
+    const winningNumbersArray = ticketData.winningNumbers.split(',').map(num => parseInt(num, 10));
+    const numbersArray = ticketNums.map(num => parseInt(num, 10));
+  
+    // Calculate winnings based on matching numbers
+    let matched = 0;
+    for (let i = 0; i < numbersArray.length; i++) {
+      if (numbersArray[i] === winningNumbersArray[i]) {
+        matched += 1;
       }
     }
-    const winner = false;
-    
+  
+    // Determine the percentage of the jackpot based on the number of matches
+    const jackpotPercentage = getJackpotPercentage(matched);
+    const winnings = ticketData.jackpot * jackpotPercentage;
+  
+    const winner = matched > 0; // User is a winner if there is at least one match
+
+  
+  
     transactionDB.transaction(tx => {
       tx.executeSql(
-        'INSERT INTO transactions (userId, ticketId, ticketName, confirmation, numbers, winner, cashed) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-        [User, ticketData.id, ticketData.type, confirmation, numbers, winner, cashed, ticketData.jackpot],
+        'INSERT INTO transactions (userId, ticketId, ticketName, confirmation, numbers, winner, cashed, jackpot, winnings) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        [User, ticketData.id, ticketData.type, confirmation, ticketNums.join(','), winner, cashed, ticketData.jackpot, winnings],
         (_, result) => {
           console.log('Transaction successful');
           navigation.popToTop();
@@ -101,6 +105,22 @@ const OrderScreen = ({ route, navigation }) => {
       );
     });
   };
+  
+  const getJackpotPercentage = (matched) => {
+    switch (matched) {
+      case 2:
+        return 0.01; // 1% of the jackpot
+      case 3:
+        return 0.05; // 5% of the jackpot
+      case 4:
+        return 0.2; // 20% of the jackpot
+      case 5:
+        return 1; // 100% of the jackpot
+      default:
+        return 0; // No jackpot
+    }
+  };
+  
   
 
   refs.current = refs;

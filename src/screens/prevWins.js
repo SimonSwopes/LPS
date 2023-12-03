@@ -1,59 +1,39 @@
-import React, {useContext, useEffect, useState} from 'react';
-import {Text, View, Alert, FlatList, Button} from 'react-native';
+import React, { useEffect, useState, useContext } from 'react';
+import { Text, View, Alert, FlatList } from 'react-native';
 import * as SQLite from 'expo-sqlite';
 
 import UserContext from '../constants/UserContext.js';
-import winnings from '../utils/calWin.js';
+import { styles } from '../utils/styleSheet.js';
 
 const transactionDB = SQLite.openDatabase('transactionData.db');
 
-import {styles} from '../utils/styleSheet.js';
-
-const PreviousWinsScreen= ({ navigation}) => {
-
-  const {User, setUser} = useContext(UserContext);
-  const [DATA, setData] = useState(null);
+const PreviousWinsScreen = () => {
+  const [winsData, setWinsData] = useState(null);
+  const { User } = useContext(UserContext);
 
   useEffect(() => {
     transactionDB.transaction(
       tx => {
-        'SELECT * FROM  transactions WHERE userID = ?, winner > 1',
-        [User],
-        (_, {rows}) => {
-          if (rows.length > 0) {
-            setData(rows._array);
+        tx.executeSql(
+          'SELECT ticketName, numbers, winnings FROM transactions WHERE userId = ? AND winnings > 0',
+          [User],
+          (_, { rows }) => {
+            if (rows.length > 0) {
+              setWinsData(rows._array);
+            }
+          },
+          (error) => {
+            console.log('Transaction Error:', error);
+            Alert.alert('Error', 'Unable to retrieve winnings at this time',);
           }
-        },
-        (error) => {
-          console.log('Transaction Error:', error);
-          Alert.alert('Error', 'Unable to retrieve winners at this time');
-        }
+        );
       });
   }, [User]);
 
-  const handleRedeem = ({ item }) => {
-    transactionDB.transaction(
-      tx => {
-        'UPDATE transactions SET cahsed = 1 WHERE id = ?',
-        [item.id],
-        (_, {rowsAffected}) => {
-          if (rowsAffected > 0) {
-            console.log('Redeem Sucessful');
-            const amountWon = winnings(item.jackpot, item.winner);
-            Alert.alert('Reedemed', `Your won ${amountWon}`);
-          } else {
-            console.log('Redeem Failed');
-            Alert.alert('Error', 'Unable to redeem at this time.');
-          }
-        }
-      }
-    );
-  };
-
-  const renderWinners = ({ item }) => {
+  const renderWins = ({ item }) => {
     return (
       <View>
-        <Button title={item.confirmation} onPress={() => console.log('Redeem')}/>
+        <Text style={styles.subTitle}>{`Ticket: ${item.ticketName}, Numbers: ${item.numbers}, Winnings: $${item.winnings}`}</Text>
       </View>
     );
   };
@@ -61,12 +41,12 @@ const PreviousWinsScreen= ({ navigation}) => {
   return (
     <View style={styles.container}>
       <FlatList
-        data={DATA}
-        renderItem={renderWinners}
+        data={winsData}
+        renderItem={renderWins}
         keyExtractor={(item, index) => index.toString()}
         ListEmptyComponent={() => (
           <View>
-            <Text style={styles.subTitle}>No Winners</Text>
+            <Text style={styles.subTitle}>No Winnings</Text>
           </View>
         )}
       />
