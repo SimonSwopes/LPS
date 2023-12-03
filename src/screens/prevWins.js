@@ -3,6 +3,7 @@ import {Text, View, Alert, FlatList, Button} from 'react-native';
 import * as SQLite from 'expo-sqlite';
 
 import UserContext from '../constants/UserContext.js';
+import winnings from '../utils/calWin.js';
 
 const transactionDB = SQLite.openDatabase('transactionData.db');
 
@@ -16,7 +17,7 @@ const PreviousWinsScreen= ({ navigation}) => {
   useEffect(() => {
     transactionDB.transaction(
       tx => {
-        'SELECT * FROM  transactions WHERE userID = ?, winner = 1',
+        'SELECT * FROM  transactions WHERE userID = ?, winner > 1',
         [User],
         (_, {rows}) => {
           if (rows.length > 0) {
@@ -38,7 +39,8 @@ const PreviousWinsScreen= ({ navigation}) => {
         (_, {rowsAffected}) => {
           if (rowsAffected > 0) {
             console.log('Redeem Sucessful');
-            Alert.alert('Reedemed', 'Your Ticket has been redeemed');
+            const amountWon = winnings(item.jackpot, item.winner);
+            Alert.alert('Reedemed', `Your won ${amountWon}`);
           } else {
             console.log('Redeem Failed');
             Alert.alert('Error', 'Unable to redeem at this time.');
