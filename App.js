@@ -105,11 +105,12 @@ useEffect(() => {
 
 
 const transactionsDb = SQLite.openDatabase('transactionData.db');
+
 useEffect(() => {
   transactionsDb.transaction(tx => {
     // Initialize the transactions table with all columns
     tx.executeSql(
-      'CREATE TABLE IF NOT EXISTS transactions (id INTEGER PRIMARY KEY AUTOINCREMENT, userId INTEGER, ticketId INTEGER, confirmation TEXT, numbers TEXT, winner INTEGER, cashed BOOL, ticketName TEXT, jackpot REAL);',
+      'CREATE TABLE IF NOT EXISTS transactions (id INTEGER PRIMARY KEY AUTOINCREMENT, userId INTEGER, ticketId INTEGER, confirmation TEXT, numbers TEXT, winner INTEGER, cashed BOOL, ticketName TEXT, jackpot REAL, winnings REAL);',
       [],
       (_, result) => {
         console.log('Transactions table created successfully');
@@ -131,15 +132,49 @@ useEffect(() => {
           tx.executeSql(
             'ALTER TABLE transactions ADD COLUMN ticketName TEXT;',
             [],
-            (_, resultAlter) => {
+            (_, resultAlterTicket) => {
               console.log('Altered transactions table successfully to add ticketName column');
             },
-            (_, errorAlter) => {
-              console.log('Error altering transactions table:', errorAlter);
+            (_, errorAlterTicket) => {
+              console.log('Error altering transactions table for ticketName:', errorAlterTicket);
             }
           );
         } else {
           console.log('ticketName column already exists');
+        }
+
+        // Check if the jackpot column exists before attempting to add it
+        if (!existingColumns.includes('jackpot')) {
+          // The jackpot column doesn't exist, so we can add it
+          tx.executeSql(
+            'ALTER TABLE transactions ADD COLUMN jackpot REAL;',
+            [],
+            (_, resultAlterJackpot) => {
+              console.log('Altered transactions table successfully to add jackpot column');
+            },
+            (_, errorAlterJackpot) => {
+              console.log('Error altering transactions table for jackpot:', errorAlterJackpot);
+            }
+          );
+        } else {
+          console.log('jackpot column already exists');
+        }
+
+        // Check if the winnings column exists before attempting to add it
+        if (!existingColumns.includes('winnings')) {
+          // The winnings column doesn't exist, so we can add it
+          tx.executeSql(
+            'ALTER TABLE transactions ADD COLUMN winnings REAL;',
+            [],
+            (_, resultAlterWinnings) => {
+              console.log('Altered transactions table successfully to add winnings column');
+            },
+            (_, errorAlterWinnings) => {
+              console.log('Error altering transactions table for winnings:', errorAlterWinnings);
+            }
+          );
+        } else {
+          console.log('winnings column already exists');
         }
       },
       (_, errorInfo) => {
@@ -148,6 +183,8 @@ useEffect(() => {
     );
   });
 }, []);
+
+
 
 
   
