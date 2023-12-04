@@ -9,6 +9,7 @@ import { Generate_Con_number} from '../utils/Confirm_number.js';
 
 const ticketDB = SQLite.openDatabase('ticketData.db');
 const transactionDB = SQLite.openDatabase('transactionData.db');
+const paymentDB = SQLite.openDatabase('paymentData.db');
 
 const OrderScreen = ({ route, navigation }) => {
   const { User, setUser } = useContext(UserContext);
@@ -17,7 +18,7 @@ const OrderScreen = ({ route, navigation }) => {
 
   const [ticketNums, setNums] = useState([]);
   const refs = useRef(Array(5).fill(null))
-  
+
   // purchase info
   const [card, setCard] = useState('')
   const [exp,setExp] = useState('')
@@ -70,10 +71,10 @@ const OrderScreen = ({ route, navigation }) => {
     const numSoldUpdate = ticketData.numsold + 1;
     const confirmation = Generate_Con_number(10); // change for different length con num
     const cashed = 0;
-  
+
     const winningNumbersArray = ticketData.winningNumbers.split(',').map(num => parseInt(num, 10));
     const numbersArray = ticketNums.map(num => parseInt(num, 10));
-  
+
     // Calculate winnings based on matching numbers
     let matched = 0;
     for (let i = 0; i < numbersArray.length; i++) {
@@ -81,23 +82,40 @@ const OrderScreen = ({ route, navigation }) => {
         matched += 1;
       }
     }
-  
+
     // Determine the percentage of the jackpot based on the number of matches
     const jackpotPercentage = getJackpotPercentage(matched);
     const winnings = ticketData.jackpot * jackpotPercentage;
-  
+
     const winner = matched > 0; // User is a winner if there is at least one match
 
-  
-  
+
+
     transactionDB.transaction(tx => {
       tx.executeSql(
         'INSERT INTO transactions (userId, ticketId, ticketName, confirmation, numbers, winner, cashed, jackpot, winnings) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
         [User, ticketData.id, ticketData.type, confirmation, ticketNums.join(','), winner, cashed, ticketData.jackpot, winnings],
         (_, result) => {
           console.log('Transaction successful');
-          navigation.popToTop();
-        },
+          paymentDB.transaction(tx => {
+              tx.executeSql(
+                'INSERT INTO payments (userId, name, ccnum, ccexp, cvv) VALUES (?, ?, ?, ?, ?)',
+                [User, User.name, card, exp, cvv],
+                (_, paymentresult) => {
+                  console.log('Payment information saved successfully');
+                  if (winner) {
+                    navigation.replace('cashout');
+                  }
+                  else
+                    navigation.poptotop()
+                },
+                (_, paymenterror) => {
+                  console.log('Error Processing Payment Information:', error);
+                  Alert.alert('Error', 'Information could not be processed.');
+                }
+              );
+            });
+          },
         (_, error) => {
           console.log('Error Processing Transaction:', error);
           Alert.alert('Error', 'Purchase could not be processed.');
@@ -105,7 +123,7 @@ const OrderScreen = ({ route, navigation }) => {
       );
     });
   };
-  
+
   const getJackpotPercentage = (matched) => {
     switch (matched) {
       case 2:
@@ -120,8 +138,8 @@ const OrderScreen = ({ route, navigation }) => {
         return 0; // No jackpot
     }
   };
-  
-  
+
+
 
   refs.current = refs;
   return (
@@ -159,6 +177,7 @@ const OrderScreen = ({ route, navigation }) => {
             />
             <View style={styles.rowContainer}>
               <TextInput
+                pattern="\d{2}/\d{4}"
                 placeholder='Exp mm/yyyy'
                 inputMode='numeric'
                 style={styles.inputText}
