@@ -109,13 +109,13 @@ useEffect(() => {
     // Create the 'users' table if it doesn't exist
     paymentDb.transaction(tx => {
       tx.executeSql(
-        'CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, email TEXT, ccnum TEXT, ccexp TEXT, ccdigits TEXT, ccname TEXT, paypalemail TEXT, paypaylpassword TEXT);',
+        'CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, ccnum TEXT, ccexp TEXT, cvv TEXT);',
         [],
         (_, result) => {
-          console.log('User table created successfully');
+          console.log('Payment table created successfully');
         },
         (_, error) => {
-          console.log('Error user creating table: ', error);
+          console.log('Error payment creating table: ', error);
         }
       );
     });
