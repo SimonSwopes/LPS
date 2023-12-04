@@ -173,6 +173,7 @@ const OrderScreen = ({ route, navigation }) => {
             />
             <View style={styles.rowContainer}>
               <TextInput
+                pattern="\d{2}/\d{4}"
                 placeholder='Exp mm/yyyy'
                 inputMode='numeric'
                 style={styles.inputText}
