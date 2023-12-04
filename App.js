@@ -26,6 +26,7 @@ import ManageScreen from './src/screens/manage.js';
 import AddTicketScreen from './src/screens/addTicket.js';
 import RemoveTicket from './src/screens/removeTicket.js';
 import OrderScreen from './src/screens/order.js';
+import CashOutScreen from './src/screens/cashOut.js';
 
 // Contexts Imports
 import UserContext from './src/constants/UserContext.js';
@@ -235,6 +236,7 @@ useEffect(() => {
       <Stack.Screen name="AddTicket" component={AddTicketScreen} options={{title: 'New'}}/>
       <Stack.Screen name="Remove" component={RemoveTicket} options={{title: 'Remove'}}/>
       <Stack.Screen name="Order" component={OrderScreen} options={{title: 'Order'}}/>
+      <Stack.Screen name="Cashout" component={OrderScreen} options={{title: 'Cashout'}}/>
       </Stack.Navigator>
     </NavigationContainer>
     </UserContext.Provider>
