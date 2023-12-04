@@ -236,7 +236,7 @@ useEffect(() => {
       <Stack.Screen name="AddTicket" component={AddTicketScreen} options={{title: 'New'}}/>
       <Stack.Screen name="Remove" component={RemoveTicket} options={{title: 'Remove'}}/>
       <Stack.Screen name="Order" component={OrderScreen} options={{title: 'Order'}}/>
-      <Stack.Screen name="Cashout" component={OrderScreen} options={{title: 'Cashout'}}/>
+      <Stack.Screen name="Cashout" component={CashOutScreen} options={{title: 'Cashout'}}/>
       </Stack.Navigator>
     </NavigationContainer>
     </UserContext.Provider>
