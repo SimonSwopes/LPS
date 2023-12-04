@@ -107,7 +107,7 @@ const OrderScreen = ({ route, navigation }) => {
                     navigation.replace('Cashout');
                   }
                   else
-                    navigation.replace('Home')
+                    navigation.popToTop()
                 },
                 (_, paymenterror) => {
                   console.log('Error Processing Payment Information:', error);
