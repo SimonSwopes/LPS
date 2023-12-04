@@ -26,7 +26,7 @@ import ManageScreen from './src/screens/manage.js';
 import AddTicketScreen from './src/screens/addTicket.js';
 import RemoveTicket from './src/screens/removeTicket.js';
 import OrderScreen from './src/screens/order.js';
-import CashOutScreen from './src/screens/cashOut.js';
+import CashOutScreen from './src/screens/cashout.js';
 
 // Contexts Imports
 import UserContext from './src/constants/UserContext.js';
