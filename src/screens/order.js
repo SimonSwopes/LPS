@@ -104,10 +104,10 @@ const OrderScreen = ({ route, navigation }) => {
                 (_, paymentresult) => {
                   console.log('Payment information saved successfully');
                   if (winner) {
-                    navigation.replace('cashout');
+                    navigation.replace('Cashout');
                   }
                   else
-                    navigation.poptotop()
+                    navigation.replace('Home')
                 },
                 (_, paymenterror) => {
                   console.log('Error Processing Payment Information:', error);
