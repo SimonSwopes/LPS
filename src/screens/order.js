@@ -1,5 +1,5 @@
 import React, {useContext, useEffect, useState, useRef} from 'react';
-import {Text, View, TextInput, Keyboard, Button, Pressable, Alert, ScrollView} from 'react-native';
+import {Text, View, TextInput, Keyboard, Button, Pressable, Alert, KeyboardAvoidingView, ScrollView} from 'react-native';
 import * as SQLite from 'expo-sqlite';
 import {styles} from '../utils/styleSheet.js';
 import UserContext from '../constants/UserContext.js';
@@ -143,7 +143,10 @@ const OrderScreen = ({ route, navigation }) => {
 
   refs.current = refs;
   return (
-    <ScrollView style={styles.container}>
+    <KeyboardAvoidingView style={styles.container}
+      behavior = {Platform.OS === 'ios' ? 'padding' : 'height'}
+    >
+      <ScrollView>
       {ticketData ? (
         <View style={styles.container}> 
           <Text style={styles.subTitle}>{ticketData.type}: ${ticketData.price}</Text>
@@ -204,7 +207,8 @@ const OrderScreen = ({ route, navigation }) => {
         <Text style={styles.inputText}>Loading...</Text>
       )}
     </ScrollView>
+  </KeyboardAvoidingView>
   );
-}
+};
 
 export default OrderScreen;
