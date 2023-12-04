@@ -1,5 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, TextInput, ScrollView, Button } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
+import { StyleSheet, Text, View, TextInput, ScrollView, Button } from 'react-native';
 import 'react-native-gesture-handler';
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
@@ -67,14 +69,14 @@ useEffect(() => {
       [],
       (_, result) => {
         console.log('Ticket table created successfully');
-        
+
         // Check if the winningNumbers column exists before attempting to add it
         tx.executeSql(
           'PRAGMA table_info(tickets);',
           [],
           (_, resultInfo) => {
             const existingColumns = Array.from({ length: resultInfo.rows.length }, (_, i) => resultInfo.rows.item(i).name);
-            
+
             if (!existingColumns.includes('winningNumbers')) {
               // The winningNumbers column doesn't exist, so we can add it
               tx.executeSql(
@@ -102,7 +104,22 @@ useEffect(() => {
     );
   });
 }, []);
-
+  const paymentDb = SQLite.openDatabase('paymentData.db');
+  useEffect(() => {
+    // Create the 'users' table if it doesn't exist
+    paymentDb.transaction(tx => {
+      tx.executeSql(
+        'CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, email TEXT, ccnum TEXT, ccexp TEXT, ccdigits TEXT, ccname TEXT, paypalemail TEXT, paypaylpassword TEXT);',
+        [],
+        (_, result) => {
+          console.log('User table created successfully');
+        },
+        (_, error) => {
+          console.log('Error user creating table: ', error);
+        }
+      );
+    });
+  }, []);
 
 const transactionsDb = SQLite.openDatabase('transactionData.db');
 
@@ -187,7 +204,7 @@ useEffect(() => {
 
 
 
-  
+
   return (
     <UserContext.Provider value={{User, setUser}}>
     <NavigationContainer>
