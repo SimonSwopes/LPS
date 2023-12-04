@@ -110,7 +110,7 @@ const OrderScreen = ({ route, navigation }) => {
                     navigation.popToTop()
                 },
                 (_, paymenterror) => {
-                  console.log('Error Processing Payment Information:', error);
+                  console.log('Error Processing Payment Information:', paymenterror);
                   Alert.alert('Error', 'Information could not be processed.');
                 }
               );
