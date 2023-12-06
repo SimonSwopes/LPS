@@ -1,42 +1,47 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { Text, View, Alert, FlatList, TouchableOpacity, Button } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { Text, View, FlatList, TouchableOpacity } from 'react-native';
 import * as SQLite from 'expo-sqlite';
-
 import UserContext from '../constants/UserContext.js';
 import { styles } from '../utils/styleSheet.js';
 
 const transactionDB = SQLite.openDatabase('transactionData.db');
 
-const HistoryScreen = ({ navigation }) => {
+const RedeemableTicketsScreen = ({ navigation }) => {
   const { User, setUser } = useContext(UserContext);
-  const [DATA, setData] = useState(null);
+  const [redeemableTickets, setRedeemableTickets] = useState([]);
 
   useEffect(() => {
     transactionDB.transaction(
       (tx) => {
         tx.executeSql(
-          'SELECT * FROM transactions WHERE userId = ?',
+          'SELECT * FROM transactions WHERE userId = ? AND winnings > 0 AND redeemed = "NO"',
           [User],
           (_, { rows }) => {
             if (rows.length > 0) {
-              setData(rows._array);
+              setRedeemableTickets(rows._array);
             }
           },
           (error) => {
             console.log('Transaction Error:', error);
-            Alert.alert('Error', 'Unable to retrieve orders at this time');
           }
         );
       }
     );
   }, [User]);
 
-  const renderTransactions = ({ item }) => {
+  const renderRedeemableTickets = ({ item }) => {
+    const handleNavigateToPaymentPreference = () => {
+      if (item.winnings >= 600) {
+        // Display a message if winnings are too high
+        navigation.navigate('WinningsTooHighScreen');
+      } else {
+        // Allow user to choose payment preference
+        navigation.navigate('PaymentPreferenceScreen', { ticketId: item.ticketId });
+      }
+    };
+
     return (
-      <TouchableOpacity
-        onPress={() => navigation.navigate('PurchasedTicketInfo', { ticketId: item.ticketId })}
-      >
+      <TouchableOpacity onPress={handleNavigateToPaymentPreference}>
         <View>
           <Text style={styles.subTitle}>
             {item.ticketName}: {"\n\t"}numbers: {item.numbers}, {"\n\t"}winnings: ${item.winnings}
@@ -46,25 +51,20 @@ const HistoryScreen = ({ navigation }) => {
     );
   };
 
-  const handleNavigateToRedeemableTickets = () => {
-    navigation.navigate('RedeemableTicketScreen');
-  };
-
   return (
     <View style={styles.container}>
       <FlatList
-        data={DATA}
-        renderItem={renderTransactions}
+        data={redeemableTickets}
+        renderItem={renderRedeemableTickets}
         keyExtractor={(item, index) => index.toString()}
         ListEmptyComponent={() => (
           <View>
-            <Text style={styles.subTitle}>No Transactions</Text>
+            <Text style={styles.subTitle}>No Redeemable Tickets</Text>
           </View>
         )}
       />
-      <Button title="Redeemable Tickets" onPress={handleNavigateToRedeemableTickets} />
     </View>
   );
 };
 
-export default HistoryScreen;
+export default RedeemableTicketsScreen;

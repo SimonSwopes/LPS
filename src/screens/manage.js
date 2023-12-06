@@ -30,7 +30,7 @@ const ManageScreen = ({ navigation }) => {
   const renderTickets = ({ item }) => {
     return (
       <View style={styles.rowContainer}>
-        <Text style={styles.subTitle}>{item.type}: ${item.price}, {item.jackpot} million</Text> 
+        <Text style={styles.subTitle}>{item.type}: ${item.price},${item.jackpot}</Text> 
       </View>
     )
   };

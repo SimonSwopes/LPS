@@ -1,46 +1,59 @@
-import React, {useState, useEffect} from 'react';
-import {Text, View, SafeAreaView, FlatList} from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { Text, View } from 'react-native';
 import * as SQLite from 'expo-sqlite';
-import {styles} from '../utils/styleSheet.js';
+import { styles } from '../utils/styleSheet.js';
 
 const ticketDB = SQLite.openDatabase('ticketData.db');
 
 const StatusScreen = ({ navigation }) => {
-  const [total, setTotal] = useState(0);
-  const [sales, setSales] = useState(0)
+  const [typeEarnings, setTypeEarnings] = useState([]);
+
   useEffect(() => {
     ticketDB.transaction(
-      tx => {
+      (tx) => {
         tx.executeSql(
-          'SELECT * FROM tickets',
+          'SELECT type, price, numsold FROM tickets',
           [],
           (_, result) => {
             const dataFromDB = result.rows._array;
-            let earnings = 0;
-            let sold = 0;
+            const typeEarningsMap = {};
+
             for (let i = 0; i < dataFromDB.length; i++) {
-              earnings += (dataFromDB[i].numsold * dataFromDB[i].price);
-              sold += dataFromDB[i].numsold
+              const { type, price, numsold } = dataFromDB[i];
+              const product = price * numsold;
+
+              if (type in typeEarningsMap) {
+                typeEarningsMap[type].earnings += product;
+                typeEarningsMap[type].sold += numsold;
+              } else {
+                typeEarningsMap[type] = { earnings: product, sold: numsold };
+              }
             }
-            setTotal(earnings);
-            setSales(sold);
+
+            setTypeEarnings(Object.entries(typeEarningsMap));
+          },
+          (_, error) => {
+            console.log('Transaction error:', error);
           }
         );
       },
-      error => {
-        console.log('Transaction error:', error);
-      }
+      []
     );
   }, []);
 
   return (
     <View style={styles.container}>
-      <Text style={styles.subTitle}>Total Earnings</Text>
-      <Text style={styles.subTitle}>${total}</Text>
-      <View style={styles.spacer}/>
-      <Text style={styles.subTitle}>Tickets Sold</Text>
-      <Text style={styles.subTitle}>{sales}</Text>
+      <Text style={styles.subTitle}>Ticket Sales/Earnings:{"\n"}</Text>
+      {typeEarnings.map(([type, { earnings, sold }], index) => (
+        <View key={index}>
+          <Text style={styles.subTitle}>{type}</Text>
+          <Text style={styles.subTitle}>Total Earnings: ${earnings}</Text>
+          <Text style={styles.subTitle}>Tickets Sold: {sold}</Text>
+          <View style={styles.spacer} />
+        </View>
+      ))}
     </View>
   );
-}
+};
+
 export default StatusScreen;
