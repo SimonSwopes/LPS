@@ -14,6 +14,9 @@ import HomeScreen from './src/screens/home.js';
 import LoginScreen from './src/screens/login.js';
 import BrowseScreen from './src/screens/browse.js';
 import HistoryScreen from './src/screens/history.js';
+import PurchasedTicketInfoScreen from './src/screens/PurchasedTicketInfoScreen.js';
+import RedeemableTicketsScreen from './src/screens/RedeemableTicketScreen.js';
+
 import PreviousWinsScreen from './src/screens/prevWins.js';
 import ProfileScreen from './src/screens/profile.js';
 import SearchScreen from './src/screens/search.js';
@@ -27,6 +30,8 @@ import OrderScreen from './src/screens/order.js';
 
 // Contexts Imports
 import UserContext from './src/constants/UserContext.js';
+import PaymentPreferenceScreen from './src/screens/PaymentPreferenceScreen.js';
+import WinningsTooHighScreen from './src/screens/WinningsTooHighScreen.js';
 
 // Global Navigation Stack
 const Stack = createStackNavigator();
@@ -37,19 +42,52 @@ export default function App() {
   const [User, setUser] = useState(0);
 
   const db = SQLite.openDatabase('userData.db');
+
   useEffect(() => {
     // Create the 'users' table if it doesn't exist
-    db.transaction(tx => {
+    db.transaction((tx) => {
       tx.executeSql(
-        'CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, email TEXT, password TEXT, address TEXT, phone TEXT);',
+        'CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, email TEXT, password TEXT, address TEXT, phone TEXT, PayPalEmail TEXT, PayPalPassword TEXT, Card TEXT, ExpirationDate TEXT, CVV TEXT);',
         [],
         (_, result) => {
           console.log('User table created successfully');
         },
         (_, error) => {
-          console.log('Error user creating table: ', error);
+          console.log('Error creating user table: ', error);
         }
       );
+
+      // Check if each new column exists before attempting to add it
+      ['PayPalEmail', 'PayPalPassword', 'Card', 'ExpirationDate', 'CVV'].forEach((columnName) => {
+        tx.executeSql(
+          `PRAGMA table_info(users);`,
+          [],
+          (_, resultInfo) => {
+            const existingColumns = Array.from({ length: resultInfo.rows.length }, (_, i) =>
+              resultInfo.rows.item(i).name
+            );
+
+            if (!existingColumns.includes(columnName)) {
+              // The column doesn't exist, so we can add it
+              tx.executeSql(
+                `ALTER TABLE users ADD COLUMN ${columnName} TEXT;`,
+                [],
+                (_, resultAlter) => {
+                  console.log(`Altered users table successfully to add ${columnName} column`);
+                },
+                (_, errorAlter) => {
+                  console.log(`Error altering users table for ${columnName}:`, errorAlter);
+                }
+              );
+            } else {
+              console.log(`${columnName} column already exists`);
+            }
+          },
+          (_, errorInfo) => {
+            console.log(`Error checking users table info for ${columnName}:`, errorInfo);
+          }
+        );
+      });
     });
   }, []);
 
@@ -107,7 +145,7 @@ useEffect(() => {
 const transactionsDb = SQLite.openDatabase('transactionData.db');
 
 useEffect(() => {
-  transactionsDb.transaction(tx => {
+  transactionsDb.transaction((tx) => {
     // Initialize the transactions table with all columns
     tx.executeSql(
       'CREATE TABLE IF NOT EXISTS transactions (id INTEGER PRIMARY KEY AUTOINCREMENT, userId INTEGER, ticketId INTEGER, confirmation TEXT, numbers TEXT, winner INTEGER, cashed BOOL, ticketName TEXT, jackpot REAL, winnings REAL);',
@@ -120,69 +158,40 @@ useEffect(() => {
       }
     );
 
-    // Check if the ticketName column exists before attempting to add it
-    tx.executeSql(
-      'PRAGMA table_info(transactions);',
-      [],
-      (_, resultInfo) => {
-        const existingColumns = Array.from({ length: resultInfo.rows.length }, (_, i) => resultInfo.rows.item(i).name);
-
-        if (!existingColumns.includes('ticketName')) {
-          // The ticketName column doesn't exist, so we can add it
-          tx.executeSql(
-            'ALTER TABLE transactions ADD COLUMN ticketName TEXT;',
-            [],
-            (_, resultAlterTicket) => {
-              console.log('Altered transactions table successfully to add ticketName column');
-            },
-            (_, errorAlterTicket) => {
-              console.log('Error altering transactions table for ticketName:', errorAlterTicket);
-            }
+    // Check if each new column exists before attempting to add it
+    ['cardNumber', 'expDate', 'cvv', 'paypalEmail', 'paypalPassword', 'redeemed'].forEach((columnName) => {
+      tx.executeSql(
+        `PRAGMA table_info(transactions);`,
+        [],
+        (_, resultInfo) => {
+          const existingColumns = Array.from({ length: resultInfo.rows.length }, (_, i) =>
+            resultInfo.rows.item(i).name
           );
-        } else {
-          console.log('ticketName column already exists');
-        }
 
-        // Check if the jackpot column exists before attempting to add it
-        if (!existingColumns.includes('jackpot')) {
-          // The jackpot column doesn't exist, so we can add it
-          tx.executeSql(
-            'ALTER TABLE transactions ADD COLUMN jackpot REAL;',
-            [],
-            (_, resultAlterJackpot) => {
-              console.log('Altered transactions table successfully to add jackpot column');
-            },
-            (_, errorAlterJackpot) => {
-              console.log('Error altering transactions table for jackpot:', errorAlterJackpot);
-            }
-          );
-        } else {
-          console.log('jackpot column already exists');
+          if (!existingColumns.includes(columnName)) {
+            // The column doesn't exist, so we can add it
+            tx.executeSql(
+              `ALTER TABLE transactions ADD COLUMN ${columnName} TEXT;`,
+              [],
+              (_, resultAlter) => {
+                console.log(`Altered transactions table successfully to add ${columnName} column`);
+              },
+              (_, errorAlter) => {
+                console.log(`Error altering transactions table for ${columnName}:`, errorAlter);
+              }
+            );
+          } else {
+            console.log(`${columnName} column already exists`);
+          }
+        },
+        (_, errorInfo) => {
+          console.log(`Error checking transactions table info for ${columnName}:`, errorInfo);
         }
-
-        // Check if the winnings column exists before attempting to add it
-        if (!existingColumns.includes('winnings')) {
-          // The winnings column doesn't exist, so we can add it
-          tx.executeSql(
-            'ALTER TABLE transactions ADD COLUMN winnings REAL;',
-            [],
-            (_, resultAlterWinnings) => {
-              console.log('Altered transactions table successfully to add winnings column');
-            },
-            (_, errorAlterWinnings) => {
-              console.log('Error altering transactions table for winnings:', errorAlterWinnings);
-            }
-          );
-        } else {
-          console.log('winnings column already exists');
-        }
-      },
-      (_, errorInfo) => {
-        console.log('Error checking transactions table info:', errorInfo);
-      }
-    );
+      );
+    });
   });
 }, []);
+
 
 
 
@@ -208,6 +217,10 @@ useEffect(() => {
       <Stack.Screen name="Home" component={HomeScreen} options={{title: 'Home'}}/>
       <Stack.Screen name="Browse" component={BrowseScreen} options={{title: 'Browse Tickets'}}/>
       <Stack.Screen name="History" component={HistoryScreen} options={{title: 'Order History'}}/>
+      <Stack.Screen name="RedeemableTicketScreen" component={RedeemableTicketsScreen} options={{ title: 'Redeemable Tickets' }}/>
+      <Stack.Screen name="PaymentPreferenceScreen" component={PaymentPreferenceScreen} options={{ title: 'Payment Credentials' }}/>
+      <Stack.Screen name="WinningsTooHighScreen" component={WinningsTooHighScreen} options={{ title: 'Winnings Too High!' }}/>
+      <Stack.Screen name="PurchasedTicketInfo" component={PurchasedTicketInfoScreen} options={{ title: 'Purchased Ticket Info' }}/>
       <Stack.Screen name="Previous Wins" component={PreviousWinsScreen} options={{title: 'Previoius Wins'}}/>
       <Stack.Screen name="Profile" component={ProfileScreen} options={{title: 'Profile'}}/>
       <Stack.Screen name="Search" component={SearchScreen} options={{title: 'Search Tickets'}}/>

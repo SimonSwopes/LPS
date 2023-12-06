@@ -6,14 +6,16 @@ import { styles } from '../utils/styleSheet'; // Make sure to adjust the path ba
 import UserContext from '../constants/UserContext.js';
 
 const db = SQLite.openDatabase('userData.db');
+const transactionDB = SQLite.openDatabase('transactionData.db');
 
 const ProfileScreen = ({ navigation }) => {
   const [userData, setUserData] = useState(null);
-  const {User, setUser} = useContext(UserContext);
+  const [totalWinnings, setTotalWinnings] = useState(0);
+  const { User, setUser } = useContext(UserContext);
 
   useEffect(() => {
     // Fetch user data from the 'users' table
-    db.transaction(tx => {
+    db.transaction((tx) => {
       tx.executeSql(
         'SELECT * FROM users WHERE id = ?', // Assuming you have a user ID once they are logged in
         [User], // Replace with the actual user ID
@@ -25,6 +27,23 @@ const ProfileScreen = ({ navigation }) => {
         },
         (_, error) => {
           console.log('Error fetching user data: ', error);
+        }
+      );
+    });
+
+    // Fetch total winnings from the 'transactions' table
+    transactionDB.transaction((tx) => {
+      tx.executeSql(
+        'SELECT SUM(winnings) AS totalWinnings FROM transactions WHERE userId = ? AND redeemed = "YES"',
+        [User],
+        (_, result) => {
+          if (result.rows.length > 0) {
+            const { totalWinnings } = result.rows.item(0);
+            setTotalWinnings(totalWinnings || 0);
+          }
+        },
+        (_, error) => {
+          console.log('Error fetching total winnings: ', error);
         }
       );
     });
@@ -46,6 +65,7 @@ const ProfileScreen = ({ navigation }) => {
           <Text style={styles.profileText}>Email: {"\n\t"}{userData.email}</Text>
           <Text style={styles.profileText}>Address: {"\n\t"}{userData.address}</Text>
           <Text style={styles.profileText}>Phone: {"\n\t"}{userData.phone}</Text>
+          <Text style={styles.profileText}>Total Winnings: {"\n\t"}${totalWinnings}</Text>
           {/* Add other fields as needed */}
         </View>
       ) : (
@@ -53,8 +73,8 @@ const ProfileScreen = ({ navigation }) => {
       )}
 
       {/* Sign-out button */}
-      <Pressable style = {styles.signOutButton} onPress={handleSignOut}>
-        <Text style = {styles.buttonText}>
+      <Pressable style={styles.signOutButton} onPress={handleSignOut}>
+        <Text style={styles.buttonText}>
           Sign Out
         </Text>
       </Pressable>
